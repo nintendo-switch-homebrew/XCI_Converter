@@ -1,3 +1,5 @@
+## XCI_Converter
+
 Tool for convert your .xci backup to playable Nintendo Switch games :D
 
 You can compile the code or download the program here : https://github.com/SegFault42
@@ -8,7 +10,7 @@ You can compile the code or download the program here : https://github.com/SegFa
 
 For Windows Users, you can download hactool from here : https://github.com/SciresM/hactool/releases
 
-For Unix users, you can compil the soft from source
+For Unix users, you can compile the soft from source
 
 ## Building
 
