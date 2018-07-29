@@ -110,6 +110,7 @@ func patchMainNPDM(titleName string) {
 
 func main() {
 	var titleName string
+	printHeader()
 
 	if len(os.Args) != 3 {
 		printUsage()
