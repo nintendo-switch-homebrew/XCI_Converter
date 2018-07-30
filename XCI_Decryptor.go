@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 
 	"github.com/fatih/color"
@@ -39,7 +40,12 @@ func getBiggestNCA(titleName string) (file string) {
 	var nca myFile
 
 	color.Green("Decrypting .xci's NCA files and finding the biggest NCA...")
-	cmd := exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
+
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("./hactool.exe", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
+	} else {
+		cmd := exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
+	}
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
@@ -60,7 +66,11 @@ func getBiggestNCA(titleName string) (file string) {
 }
 
 func decryptNCA(ncaFile string, titleName string) {
-	cmd := exec.Command("./hactool", "-k", "keys.ini", "--romfs="+titleName+"/romfs.bin", "--exefsdir="+titleName+"/exefs", titleName+"/"+ncaFile)
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("./hactool.exe", "-k", "keys.ini", "--romfs="+titleName+"/romfs.bin", "--exefsdir="+titleName+"/exefs", titleName+"/"+ncaFile)
+	} else {
+		cmd := exec.Command("./hactool", "-k", "keys.ini", "--romfs="+titleName+"/romfs.bin", "--exefsdir="+titleName+"/exefs", titleName+"/"+ncaFile)
+	}
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
