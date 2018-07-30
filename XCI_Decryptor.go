@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+
+	"github.com/fatih/color"
 )
 
 type myFile struct {
@@ -17,23 +19,26 @@ type myFile struct {
 }
 
 func printHeader() {
-	const header string = `██████╗ ███████╗ ██████╗██████╗ ██╗   ██╗██████╗ ████████╗  ██╗  ██╗ ██████╗██╗      ██╗   ██╗██████╗    ██╗
-██╔══██╗██╔════╝██╔════╝██╔══██╗╚██╗ ██╔╝██╔══██╗╚══██╔══╝  ╚██╗██╔╝██╔════╝██║      ██║   ██║╚════██╗  ███║
-██║  ██║█████╗  ██║     ██████╔╝ ╚████╔╝ ██████╔╝   ██║█████╗╚███╔╝ ██║     ██║█████╗██║   ██║ █████╔╝  ╚██║
-██║  ██║██╔══╝  ██║     ██╔══██╗  ╚██╔╝  ██╔═══╝    ██║╚════╝██╔██╗ ██║     ██║╚════╝╚██╗ ██╔╝██╔═══╝    ██║
-██████╔╝███████╗╚██████╗██║  ██║   ██║   ██║        ██║     ██╔╝ ██╗╚██████╗██║       ╚████╔╝ ███████╗██╗██║
-╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝        ╚═══╝  ╚══════╝╚═╝╚═╝`
+	const header string = `██╗  ██╗ ██████╗██╗         ██████╗ ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗ ████████╗███████╗██████╗ 
+╚██╗██╔╝██╔════╝██║        ██╔════╝██╔═══██╗████╗  ██║██║   ██║██╔════╝██╔══██╗╚══██╔══╝██╔════╝██╔══██╗
+ ╚███╔╝ ██║     ██║        ██║     ██║   ██║██╔██╗ ██║██║   ██║█████╗  ██████╔╝   ██║   █████╗  ██████╔╝
+ ██╔██╗ ██║     ██║        ██║     ██║   ██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║   ██╔══╝  ██╔══██╗
+██╔╝ ██╗╚██████╗██║███████╗╚██████╗╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║   ██║   ███████╗██║  ██║
+╚═╝  ╚═╝ ╚═════╝╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 
-	fmt.Println(header)
+`
+
+	color.Green(header)
 }
 
 func printUsage() {
-	fmt.Println("Usage : ./Decrypt-XCI-v2.1 [.XCI FILE] [TITLE ID]")
+	color.Red("Usage : ./XCI_Converter [.XCI FILE] [TITLE ID]")
 }
 
 func getBiggestNCA(titleName string) (file string) {
 	var nca myFile
 
+	color.Green("Decrypting .xci's NCA files and finding the biggest NCA...")
 	cmd := exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
@@ -81,7 +86,7 @@ func padNumberWithZero(value uint64) string {
 }
 
 func patchMainNPDM(titleName string) {
-	fmt.Printf("Patching main.npdm :)")
+	color.Green("Patching main.npdm :)")
 
 	fd, err := os.OpenFile(titleName+"/exefs/main.npdm", os.O_RDWR, 0000)
 	if err != nil {
@@ -93,9 +98,6 @@ func patchMainNPDM(titleName string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	//uint64TitleName = endian.HostToNetUint64(uint64TitleName)
-	fmt.Println("\n", uint64TitleName)
 
 	_, err = fd.Seek(0x440, os.SEEK_CUR)
 	if err != nil {
@@ -119,13 +121,12 @@ func main() {
 		titleName = os.Args[2]
 	}
 
-	log.Println("Decrypting .xci's NCA files and finding the biggest NCA...")
 	ncaFile := getBiggestNCA(titleName)
+
 	decryptNCA(ncaFile, titleName)
 
-	log.Println("Patching main.mpdm ...")
 	patchMainNPDM(titleName)
 
-	fmt.Println("DONE! You should have a folder: " + titleName)
-	fmt.Println(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
+	color.Green("DONE! You should have a folder: " + titleName)
+	color.Green(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
 }
