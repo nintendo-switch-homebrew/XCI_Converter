@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -94,10 +93,6 @@ func decryptNCA(ncaFile string, titleName string) {
 			}
 		}
 	}
-}
-
-func padNumberWithZero(value uint64) string {
-	return fmt.Sprintf("%016s", value)
 }
 
 func patchMainNPDM(titleName string) {
