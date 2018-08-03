@@ -35,7 +35,7 @@ func printUsage() {
 	color.Red("Usage : ./XCI_Converter [.XCI FILE] [TITLE ID]")
 }
 
-func getBiggestNCA(titleName string) (file string) {
+func getBiggestNCA(titleName string, xciPath string) (file string) {
 	var (
 		nca myFile
 		cmd *exec.Cmd
@@ -44,9 +44,9 @@ func getBiggestNCA(titleName string) (file string) {
 	color.Green("Decrypting .xci's NCA files and finding the biggest NCA...")
 
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
+		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "-txci", "--securedir="+titleName, xciPath)
 	} else {
-		cmd = exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, os.Args[1])
+		cmd = exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, xciPath)
 	}
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
@@ -121,22 +121,23 @@ func patchMainNPDM(titleName string) {
 }
 
 func main() {
-	var titleName string
+	//var titleName string
 	printHeader()
 
-	if len(os.Args) != 3 {
-		printUsage()
-		return
-	} else {
-		titleName = os.Args[2]
-	}
+	gui()
+	//if len(os.Args) != 3 {
+	//printUsage()
+	//return
+	//} else {
+	//titleName = os.Args[2]
+	//}
 
-	ncaFile := getBiggestNCA(titleName)
+	//ncaFile := getBiggestNCA(titleName)
 
-	decryptNCA(ncaFile, titleName)
+	//decryptNCA(ncaFile, titleName)
 
-	patchMainNPDM(titleName)
+	//patchMainNPDM(titleName)
 
-	color.Green("DONE! You should have a folder: " + titleName)
-	color.Green(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
+	//color.Green("DONE! You should have a folder: " + titleName)
+	//color.Green(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
 }
