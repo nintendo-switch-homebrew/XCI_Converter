@@ -1,7 +1,7 @@
 
 ## XCI_Converter
 
-You can use cli or gui version
+You can use CLI (master branch) or GUI (gui branch) version
 
 <p align="center">
     <img src="https://user-images.githubusercontent.com/9384676/43680558-e2d0bbc6-983d-11e8-8ccc-203ee79a9503.png">
