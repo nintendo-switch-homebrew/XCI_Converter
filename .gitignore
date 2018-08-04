@@ -1,3 +1,6 @@
 *.xci
 hactool
 build
+tags
+todo
+.DS_Store

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -35,7 +36,7 @@ func printUsage() {
 	color.Red("Usage : ./XCI_Converter [.XCI FILE] [TITLE ID]")
 }
 
-func getBiggestNCA(titleName string, xciPath string) (file string) {
+func getBiggestNCA(titleIdName string, xciPath string) (file string) {
 	var (
 		nca myFile
 		cmd *exec.Cmd
@@ -44,15 +45,15 @@ func getBiggestNCA(titleName string, xciPath string) (file string) {
 	color.Green("Decrypting .xci's NCA files and finding the biggest NCA...")
 
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "-txci", "--securedir="+titleName, xciPath)
+		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "-txci", "--securedir="+titleIdName, xciPath)
 	} else {
-		cmd = exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleName, xciPath)
+		cmd = exec.Command("./hactool", "-k", "keys.ini", "-txci", "--securedir="+titleIdName, xciPath)
 	}
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
 
-	files, err := ioutil.ReadDir(titleName)
+	files, err := ioutil.ReadDir(titleIdName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,19 +68,19 @@ func getBiggestNCA(titleName string, xciPath string) (file string) {
 	return nca.Name
 }
 
-func decryptNCA(ncaFile string, titleName string) {
+func decryptNCA(ncaFile string, titleIdName string) {
 	var cmd *exec.Cmd
 
 	if runtime.GOOS == "windows" {
-		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "--romfs="+titleName+"/romfs.bin", "--exefsdir="+titleName+"/exefs", titleName+"/"+ncaFile)
+		cmd = exec.Command("./hactool.exe", "-k", "keys.ini", "--romfs="+titleIdName+"/romfs.bin", "--exefsdir="+titleIdName+"/exefs", titleIdName+"/"+ncaFile)
 	} else {
-		cmd = exec.Command("./hactool", "-k", "keys.ini", "--romfs="+titleName+"/romfs.bin", "--exefsdir="+titleName+"/exefs", titleName+"/"+ncaFile)
+		cmd = exec.Command("./hactool", "-k", "keys.ini", "--romfs="+titleIdName+"/romfs.bin", "--exefsdir="+titleIdName+"/exefs", titleIdName+"/"+ncaFile)
 	}
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
 
-	files, err := ioutil.ReadDir(titleName)
+	files, err := ioutil.ReadDir(titleIdName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,7 +88,7 @@ func decryptNCA(ncaFile string, titleName string) {
 	// delete *.nca
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".nca" {
-			err := os.Remove(titleName + "/" + file.Name())
+			err := os.Remove(titleIdName + "/" + file.Name())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -95,16 +96,16 @@ func decryptNCA(ncaFile string, titleName string) {
 	}
 }
 
-func patchMainNPDM(titleName string) {
+func patchMainNPDM(titleIdName string) {
 	color.Green("Patching main.npdm :)")
 
-	fd, err := os.OpenFile(titleName+"/exefs/main.npdm", os.O_RDWR, 0000)
+	fd, err := os.OpenFile(titleIdName+"/exefs/main.npdm", os.O_RDWR, 0000)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer fd.Close()
 
-	uint64TitleName, err := strconv.ParseUint("0x"+titleName, 0, 64)
+	uint64TitleName, err := strconv.ParseUint("0x"+titleIdName, 0, 64)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -120,24 +121,73 @@ func patchMainNPDM(titleName string) {
 	}
 }
 
+func isHex(hexa string) bool {
+	_, err := strconv.ParseUint(hexa, 16, 64)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func isValidFile(path string) bool {
+	file, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	// Check is regular file
+	if file.Mode().IsRegular() == false {
+		return false
+	}
+
+	// Check permission (at least rw)
+	mode := file.Mode().Perm()
+	if (mode >> 7) != 3 {
+		return false
+	}
+
+	return true
+}
+
+func isValidArgs(titleIDName string, xciPath string) bool {
+	if isHex(titleIDName) == false {
+		log.Fatal("Please set a valid titleID")
+		return false
+	} else if isValidFile(xciPath) == false {
+		log.Fatal("Path invalid or insufficient permission")
+		return false
+	}
+
+	return true
+}
+
 func main() {
-	//var titleName string
+	var titleIdName string
+	var xciPath string
+
 	printHeader()
 
-	gui()
-	//if len(os.Args) != 3 {
-	//printUsage()
-	//return
-	//} else {
-	//titleName = os.Args[2]
-	//}
+	if len(os.Args) != 3 {
+		printUsage()
+		return
+	} else {
+		titleIdName = os.Args[2]
+		xciPath = os.Args[1]
 
-	//ncaFile := getBiggestNCA(titleName)
+		titleIdName = strings.TrimSpace(titleIdName)
+		xciPath = strings.TrimSpace(xciPath)
+	}
 
-	//decryptNCA(ncaFile, titleName)
+	if isValidArgs(titleIdName, xciPath) == false {
+		log.Fatal("Please set a valid titleID")
+	}
 
-	//patchMainNPDM(titleName)
+	ncaFile := getBiggestNCA(titleIdName, xciPath)
 
-	//color.Green("DONE! You should have a folder: " + titleName)
-	//color.Green(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
+	decryptNCA(ncaFile, titleIdName)
+
+	patchMainNPDM(titleIdName)
+
+	color.Green("DONE! You should have a folder: " + titleIdName)
+	color.Green(titleIdName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
 }
