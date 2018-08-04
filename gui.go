@@ -20,8 +20,8 @@ package main
 
 import (
 	"container/list"
+	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -53,9 +53,8 @@ func gui() {
 	gtk.Main()
 }
 
-func isHex(hexa string) error {
-	_, err := strconv.ParseUint(hexa, 16, 64)
-	return err
+func hello() {
+	fmt.Println("Hello")
 }
 
 func windowWidget(win *gtk.Window) *gtk.Widget {
@@ -99,18 +98,18 @@ func windowWidget(win *gtk.Window) *gtk.Widget {
 		path, _ := xciPathBuffer.GetText()
 		path = strings.TrimSpace(path)
 
-		if titleIDName == "" || isHex(titleIDName) != nil {
+		if isHex(titleIDName) == false {
 			popup = gtk.MessageDialogNew(win,
 				gtk.DIALOG_MODAL,
 				gtk.MESSAGE_INFO,
 				gtk.BUTTONS_OK,
 				"Please set a valid titleID")
-		} else if path == "" {
+		} else if isValidFile(path) == false {
 			popup = gtk.MessageDialogNew(win,
 				gtk.DIALOG_MODAL,
 				gtk.MESSAGE_INFO,
 				gtk.BUTTONS_OK,
-				"Please set a valid path")
+				"Path invalid or insufficient permission")
 		} else {
 			convert(titleIDName, path)
 			popup = gtk.MessageDialogNew(win,

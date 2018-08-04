@@ -120,6 +120,34 @@ func patchMainNPDM(titleName string) {
 	}
 }
 
+func isHex(hexa string) bool {
+	_, err := strconv.ParseUint(hexa, 16, 64)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func isValidFile(path string) bool {
+	file, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	// Check is regular file
+	if file.Mode().IsRegular() == false {
+		return false
+	}
+
+	// Check permission (at least rw)
+	mode := file.Mode().Perm()
+	if (mode >> 7) != 3 {
+		return false
+	}
+
+	return true
+}
+
 func convert(titleIDName string, path string) {
 	ncaFile := getBiggestNCA(titleIDName, path)
 
