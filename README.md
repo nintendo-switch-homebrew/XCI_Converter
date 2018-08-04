@@ -1,6 +1,12 @@
 
 ## XCI_Converter
 
+You can use cli or gui version
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/9384676/43680558-e2d0bbc6-983d-11e8-8ccc-203ee79a9503.png">
+</p>
+
 Tool for convert your .xci backup to playable Nintendo Switch games :D
 
 You can compile the code or download the program here : https://github.com/SegFault42/XCI_Converter/releases
@@ -40,5 +46,3 @@ XCI_Converter, hactool or hactool.exe, keys.dat, keys.ini, and your .xci backup
 You can find all title id here : http://switchbrew.org/index.php?title=Title_list/Games
 
 ⚠️ Title id is the game installed on your switch, not the backup.
-
-⚠️ GUI version is in development 
