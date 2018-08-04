@@ -35,5 +35,5 @@ build:
 	GOOS=openbsd GOARCH=386 go build -o build/$(NAME)-openbsd-386 $(SRCS)
 	GOOS=openbsd GOARCH=amd64 go build -o build/$(NAME)-openbsd-amd64 $(SRCS)
 	GOOS=openbsd GOARCH=arm go build -o build/$(NAME)-openbsd-arm $(SRCS)
-	GOOS=windows GOARCH=386 go build -o build/$(NAME)-windows-386.exe $(SRCS)
-	GOOS=windows GOARCH=amd64 go build -o build/$(NAME)-windows-amd64.exe $(SRCS)
+	#GOOS=windows GOARCH=386 go build -o build/$(NAME)-windows-386.exe $(SRCS)
+	#GOOS=windows GOARCH=amd64 go build -o build/$(NAME)-windows-amd64.exe $(SRCS)
