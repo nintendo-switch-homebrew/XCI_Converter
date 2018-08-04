@@ -120,24 +120,17 @@ func patchMainNPDM(titleName string) {
 	}
 }
 
+func convert(titleIDName string, path string) {
+	ncaFile := getBiggestNCA(titleIDName, path)
+
+	decryptNCA(ncaFile, titleIDName)
+
+	patchMainNPDM(titleIDName)
+}
+
 func main() {
 	//var titleName string
 	printHeader()
 
 	gui()
-	//if len(os.Args) != 3 {
-	//printUsage()
-	//return
-	//} else {
-	//titleName = os.Args[2]
-	//}
-
-	//ncaFile := getBiggestNCA(titleName)
-
-	//decryptNCA(ncaFile, titleName)
-
-	//patchMainNPDM(titleName)
-
-	//color.Green("DONE! You should have a folder: " + titleName)
-	//color.Green(titleName + " should contain an exefs folder and a romfs.bin. It should NOT contain anything else.")
 }

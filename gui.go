@@ -20,8 +20,9 @@ package main
 
 import (
 	"container/list"
-	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -37,7 +38,7 @@ func gui() {
 		log.Fatal("Unable to create window:", err)
 	}
 	win.SetTitle("xci_Converter")
-	win.SetDefaultSize(300, 240)
+	win.SetDefaultSize(280, 120)
 	win.SetPosition(gtk.WIN_POS_CENTER_ALWAYS)
 	//if err != nil {
 	//log.Fatal(err)
@@ -52,6 +53,11 @@ func gui() {
 	gtk.Main()
 }
 
+func isHex(hexa string) error {
+	_, err := strconv.ParseUint(hexa, 16, 64)
+	return err
+}
+
 func windowWidget(win *gtk.Window) *gtk.Widget {
 	grid, err := gtk.GridNew()
 	if err != nil {
@@ -59,7 +65,7 @@ func windowWidget(win *gtk.Window) *gtk.Widget {
 	}
 	grid.SetOrientation(gtk.ORIENTATION_VERTICAL)
 
-	titleIDStr, err := gtk.LabelNew("Original title ID :")
+	titleIDStr, err := gtk.LabelNew("Original title ID ")
 	if err != nil {
 		log.Fatal("Unable to create new label", err)
 	}
@@ -68,7 +74,7 @@ func windowWidget(win *gtk.Window) *gtk.Widget {
 		log.Fatal("Unable to create scrolled window:", err)
 	}
 
-	xciStr, err := gtk.LabelNew("Path to your xci :")
+	xciStr, err := gtk.LabelNew("Path to your XCI ")
 	if err != nil {
 		log.Fatal("Unable to create new label", err)
 	}
@@ -83,29 +89,48 @@ func windowWidget(win *gtk.Window) *gtk.Widget {
 	}
 
 	convertButton.Connect("clicked", func() {
+		var popup *gtk.MessageDialog
+
 		titleIDBuffer, _ := titleID.GetBuffer()
 		titleIDName, _ := titleIDBuffer.GetText()
+		titleIDName = strings.TrimSpace(titleIDName)
 
 		xciPathBuffer, _ := xciPath.GetBuffer()
 		path, _ := xciPathBuffer.GetText()
-		fmt.Println("xci Path :", path)
+		path = strings.TrimSpace(path)
 
-		ncaFile := getBiggestNCA(titleIDName, path)
-
-		decryptNCA(ncaFile, titleIDName)
-
-		patchMainNPDM(titleIDName)
+		if titleIDName == "" || isHex(titleIDName) != nil {
+			popup = gtk.MessageDialogNew(win,
+				gtk.DIALOG_MODAL,
+				gtk.MESSAGE_INFO,
+				gtk.BUTTONS_OK,
+				"Please set a valid titleID")
+		} else if path == "" {
+			popup = gtk.MessageDialogNew(win,
+				gtk.DIALOG_MODAL,
+				gtk.MESSAGE_INFO,
+				gtk.BUTTONS_OK,
+				"Please set a valid path")
+		} else {
+			convert(titleIDName, path)
+			popup = gtk.MessageDialogNew(win,
+				gtk.DIALOG_MODAL,
+				gtk.MESSAGE_INFO,
+				gtk.BUTTONS_OK,
+				"Finished !")
+		}
+		popup.Run()
+		popup.Destroy()
 
 	})
 
-	convertButton.SetSizeRequest(10, 20)
 	grid.Attach(titleIDStr, 0, 0, 1, 1)
 	grid.AttachNextTo(titleID, titleIDStr, gtk.POS_RIGHT, 1, 1)
 
 	grid.Attach(xciStr, 0, 1, 1, 1)
 	grid.AttachNextTo(xciPath, xciStr, 1, 1, 1)
 
-	grid.Attach(convertButton, 1, 4, 1, 1)
+	grid.Attach(convertButton, 1, 2, 1, 1)
 
 	return &grid.Container.Widget
 }
