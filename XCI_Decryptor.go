@@ -18,23 +18,6 @@ type myFile struct {
 	Name string
 }
 
-func printHeader() {
-	const header string = `██╗  ██╗ ██████╗██╗         ██████╗ ██████╗ ███╗   ██╗██╗   ██╗███████╗██████╗ ████████╗███████╗██████╗ 
-╚██╗██╔╝██╔════╝██║        ██╔════╝██╔═══██╗████╗  ██║██║   ██║██╔════╝██╔══██╗╚══██╔══╝██╔════╝██╔══██╗
- ╚███╔╝ ██║     ██║        ██║     ██║   ██║██╔██╗ ██║██║   ██║█████╗  ██████╔╝   ██║   █████╗  ██████╔╝
- ██╔██╗ ██║     ██║        ██║     ██║   ██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗   ██║   ██╔══╝  ██╔══██╗
-██╔╝ ██╗╚██████╗██║███████╗╚██████╗╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║   ██║   ███████╗██║  ██║
-╚═╝  ╚═╝ ╚═════╝╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-
-`
-
-	color.Green(header)
-}
-
-func printUsage() {
-	color.Red("Usage : ./XCI_Converter [.XCI FILE] [TITLE ID]")
-}
-
 func getBiggestNCA(titleName string, xciPath string) (file string) {
 	var (
 		nca myFile
@@ -157,8 +140,5 @@ func convert(titleIDName string, path string) {
 }
 
 func main() {
-	//var titleName string
-	printHeader()
-
 	gui()
 }

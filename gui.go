@@ -20,7 +20,6 @@ package main
 
 import (
 	"container/list"
-	"fmt"
 	"log"
 	"strings"
 
@@ -38,11 +37,10 @@ func gui() {
 		log.Fatal("Unable to create window:", err)
 	}
 	win.SetTitle("xci_Converter")
-	win.SetDefaultSize(280, 120)
+	win.SetDefaultSize(260, 100)
+	win.SetResizable(false)
 	win.SetPosition(gtk.WIN_POS_CENTER_ALWAYS)
-	//if err != nil {
-	//log.Fatal(err)
-	//}
+
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
@@ -51,10 +49,6 @@ func gui() {
 	win.ShowAll()
 
 	gtk.Main()
-}
-
-func hello() {
-	fmt.Println("Hello")
 }
 
 func windowWidget(win *gtk.Window) *gtk.Widget {
